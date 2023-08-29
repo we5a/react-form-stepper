@@ -33,11 +33,12 @@ const paymentMethods = [
   },
 ];
 
+const phoneRegex = /(?=.*\+[0-9]{3}\s?[0-9]{2}\s?[0-9]{3}\s?[0-9]{4,5}$)/gm;
+
 const OrderForm: FC = () => {
   const navigate = useNavigate();
-
-  const order = useAppSelector<any>((state) => state.order);
   const dispatch = useAppDispatch();
+  const order = useAppSelector<any>((state) => state.order);
 
   const {
     firstName: initialFirstName,
@@ -63,6 +64,10 @@ const OrderForm: FC = () => {
     );
   });
 
+  const checkIsValid = () => {
+    return firstName && lastName && phone && phoneRegex.test(phone);
+  };
+
   const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsSpecial(e.target.checked);
   };
@@ -75,8 +80,6 @@ const OrderForm: FC = () => {
   const handleNext = () => {
     console.log("Next");
 
-    // validate here
-
     dispatch(
       addCustomerInfo({
         firstName,
@@ -87,7 +90,6 @@ const OrderForm: FC = () => {
         special: specialComment,
       })
     );
-
     navigate("/detail");
   };
 
@@ -100,7 +102,9 @@ const OrderForm: FC = () => {
       <div className={styles.form}>
         <div className={styles.inputRow}>
           <div className={styles.inputElement}>
-            <label htmlFor="first-name">First Name:</label>
+            <label htmlFor="first-name">
+              First Name<sup>*</sup>:
+            </label>
             <TextField
               id="first-name"
               required
@@ -111,7 +115,9 @@ const OrderForm: FC = () => {
           </div>
 
           <div className={styles.inputElement}>
-            <label htmlFor="last-name">Last Name:</label>
+            <label htmlFor="last-name">
+              Last Name<sup>*</sup>:
+            </label>
             <TextField
               id="last-name"
               required
@@ -123,9 +129,12 @@ const OrderForm: FC = () => {
         </div>
         <div className={styles.inputRow}>
           <div className={styles.inputElement}>
-            <label htmlFor="phone">Phone:</label>
+            <label htmlFor="phone">
+              Phone<sup>*</sup>:
+            </label>
             <TextField
               value={phone}
+              placeholder="+380996783498"
               id="phone"
               size="small"
               type="tel"
@@ -187,7 +196,11 @@ const OrderForm: FC = () => {
         )}
 
         <div className={styles.buttonsRow}>
-          <Button variant="contained" onClick={handleNext}>
+          <Button
+            variant="contained"
+            onClick={handleNext}
+            disabled={!checkIsValid()}
+          >
             Next
           </Button>
         </div>
