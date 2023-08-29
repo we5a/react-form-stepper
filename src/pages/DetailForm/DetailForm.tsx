@@ -1,14 +1,12 @@
 import { type FC, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { Button } from "@mui/material";
-import { TextField } from "@mui/material";
 import { Typography } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-
-import cn from "classnames";
-
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { addDeliveryMethod } from "../../store/orderSlice";
 import styles from "./DetailForm.module.scss";
 
 const deliveryMethods = [
@@ -18,16 +16,20 @@ const deliveryMethods = [
 ];
 
 const DetailForm: FC = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [deliveryMethod, setDeliveryMethod] = useState<any>(deliveryMethods[0]);
-  const { paymentMethod } = location.state;
+  const order = useAppSelector((state) => state.order);
+  const dispatch = useAppDispatch();
+  const [deliveryMethod, setDeliveryMethod] = useState<any>(() => {
+    return deliveryMethods.find((el) => el.value === order.deliveryMethod.type)
+  });
 
   const handlePrev = () => {
+    dispatch(addDeliveryMethod({type: deliveryMethod.value}));
     navigate("/order");
   };
 
   const handleNext = () => {
+    dispatch(addDeliveryMethod({type: deliveryMethod.value}));
     navigate("/confirm");
   };
 
@@ -40,11 +42,11 @@ const DetailForm: FC = () => {
   const deliveryConfigBlock = () => {
     switch (deliveryMethod.value) {
       case "ukrposhta":
-        return <span>Select your nearest post officee here</span>;
+        return <span>Urkposhta: Select your nearest post officee here</span>;
       case "nova-poshta":
-        return <span>Select your nearest office</span>;
+        return <span>Nova Poshta: Select your nearest office</span>;
       case "meest":
-        return <span>Adjust Meest delivery</span>;
+        return <span>Meest: Adjust Meest delivery</span>;
     }
   };
 
@@ -54,30 +56,6 @@ const DetailForm: FC = () => {
         Detail Form
       </Typography>
       <div className={styles.forms}>
-        {paymentMethod.value === "credit-card" && (
-          <div className={styles.cardBlock}>
-            <div className={styles.inputElement}>
-              <label htmlFor="card-number">Card number:</label>
-              <TextField id="card-number" size="small" type="number" />
-            </div>
-
-            <div className={cn(styles.inputElement)}>
-              <label htmlFor="cvv">CVV:</label>
-              <TextField
-                className={styles.cvvField}
-                id="cvv"
-                size="small"
-                type="number"
-              />
-            </div>
-          </div>
-        )}
-        {paymentMethod.value === "privat-24" && (
-          <div> Privat 24 payment link</div>
-        )}
-        {paymentMethod.value === "paypal" && <div>Paypal link</div>}
-
-        <hr />
 
         <div className={styles.select}>
           <label htmlFor="delivery-method">Delivery method:</label>

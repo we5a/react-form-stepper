@@ -15,6 +15,9 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import styles from "./OrderForm.module.scss";
 
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { addCustomerInfo } from "../../store/orderSlice";
+
 const paymentMethods = [
   {
     label: "Privat 24",
@@ -32,22 +35,61 @@ const paymentMethods = [
 
 const OrderForm: FC = () => {
   const navigate = useNavigate();
-  const [isSpecial, setIsSpecial] = useState<boolean>(false);
-  const [paymentMethod, setPaymentMethod] = useState<any>(paymentMethods[2]);
+
+  const order = useAppSelector<any>((state) => state.order);
+  const dispatch = useAppDispatch();
+
+  const {
+    firstName: initialFirstName,
+    lastName: initialLastName,
+    phone: initialPhone,
+    deliveryDate: initialDeliveryDate,
+    special: initialSpecial,
+    paymentMethod: initilaPaymentMethod,
+  } = order;
+
+  const [firstName, setFirstName] = useState(initialFirstName);
+  const [lastName, setLastName] = useState(initialLastName);
+  const [phone, setPhone] = useState(initialPhone);
+  const [specialComment, setSpecialComment] = useState(initialSpecial);
+  const [deliveryDate, setDeliveryDate] = useState<any>(
+    dayjs(initialDeliveryDate)
+  );
+  const [isSpecial, setIsSpecial] = useState<boolean>(Boolean(initialSpecial));
+  const [paymentMethod, setPaymentMethod] = useState<any>(() => {
+    return (
+      paymentMethods.find((el) => el.value === initilaPaymentMethod.type) ||
+      paymentMethods[0]
+    );
+  });
 
   const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsSpecial(e.target.checked);
   };
 
   const handleChange = (event: SelectChangeEvent) => {
-    const el = paymentMethods.find(el => el.value === event.target.value);
+    const el = paymentMethods.find((el) => el.value === event.target.value);
     setPaymentMethod(el);
   };
 
   const handleNext = () => {
     console.log("Next");
-    navigate("/detail", {state: {paymentMethod}});
-  }
+
+    // validate here
+
+    dispatch(
+      addCustomerInfo({
+        firstName,
+        lastName,
+        phone,
+        deliveryDate: deliveryDate.format("YYYY-MM-DD"),
+        paymentMethod: { type: paymentMethod.value },
+        special: specialComment,
+      })
+    );
+
+    navigate("/detail");
+  };
 
   return (
     <div className={styles.container}>
@@ -59,25 +101,45 @@ const OrderForm: FC = () => {
         <div className={styles.inputRow}>
           <div className={styles.inputElement}>
             <label htmlFor="first-name">First Name:</label>
-            <TextField id="first-name" size="small" />
+            <TextField
+              id="first-name"
+              required
+              size="small"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
           </div>
 
           <div className={styles.inputElement}>
             <label htmlFor="last-name">Last Name:</label>
-            <TextField id="last-name" size="small" />
+            <TextField
+              id="last-name"
+              required
+              size="small"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
           </div>
         </div>
         <div className={styles.inputRow}>
           <div className={styles.inputElement}>
             <label htmlFor="phone">Phone:</label>
-            <TextField id="phone" size="small" />
+            <TextField
+              value={phone}
+              id="phone"
+              size="small"
+              type="tel"
+              required
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </div>
 
           <div className={styles.inputElement}>
             <label htmlFor="datepicker">Delivery Date:</label>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                defaultValue={dayjs("2023-09-02")}
+                value={deliveryDate}
+                onChange={(newDate) => setDeliveryDate(newDate)}
                 disablePast
                 className={styles.datePicker}
                 slotProps={{ textField: { size: "small", id: "datepicker" } }}
@@ -86,14 +148,20 @@ const OrderForm: FC = () => {
           </div>
         </div>
 
-        {/* select */}
-
         <div className={styles.select}>
           <label htmlFor="payment-method">Payment method:</label>
           <FormControl sx={{ minWidth: 220 }} size="small">
-            <Select id="payment-method" value={paymentMethod?.value} onChange={handleChange}>
+            <Select
+              id="payment-method"
+              value={paymentMethod?.value}
+              onChange={handleChange}
+            >
               {paymentMethods.map((option) => {
-                return <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>;
+                return (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                );
               })}
             </Select>
           </FormControl>
@@ -109,26 +177,23 @@ const OrderForm: FC = () => {
           />
         </div>
 
-        {isSpecial && <Textarea minRows={6} placeholder="Your comments" />}
+        {isSpecial && (
+          <Textarea
+            minRows={6}
+            placeholder="Your comments"
+            value={specialComment}
+            onChange={(e) => setSpecialComment(e.target.value)}
+          />
+        )}
 
         <div className={styles.buttonsRow}>
-          <Button variant="contained" onClick={handleNext}>Next</Button>
+          <Button variant="contained" onClick={handleNext}>
+            Next
+          </Button>
         </div>
-
       </div>
     </div>
   );
 };
 
 export default OrderForm;
-
-/*
-/* comments Delivery method Payment method 
-first name
-last name
-
-phone
-date
-
-some view
-*/

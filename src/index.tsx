@@ -1,8 +1,10 @@
 import React from "react";
+import { Provider } from "react-redux";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
+import { store } from "./store/store";
 import AppRoutes from "./AppRoutes";
 
 const root = ReactDOM.createRoot(
@@ -11,7 +13,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AppRoutes />
+      <Provider store={store}>
+        <AppRoutes />
+      </Provider>
     </BrowserRouter>
   </React.StrictMode>
 );

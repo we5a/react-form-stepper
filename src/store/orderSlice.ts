@@ -12,15 +12,15 @@ const initialState: OrderState = {
   firstName: "",
   lastName: "",
   phone: "",
-  deliveryDate: "",
+  deliveryDate: "2023-09-02",
   special: "",
   paymentMethod: {
-    type: "",
+    type: "credit-card",
     cardNumber: "",
     cvvCode: "",
   },
   deliveryMethod: {
-    type: "",
+    type: "ukrposhta",
   },
 };
 
@@ -29,16 +29,18 @@ export const orderSlice = createSlice({
   initialState,
   reducers: {
     addCustomerInfo: (state, action: PayloadAction<any>) => {
-      state = { ...state, ...action.payload };
+      return { ...state, ...action.payload };
     },
     addPaymentMethod: (state, action: PayloadAction<any>) => {
       state.paymentMethod = { ...state.paymentMethod, ...action.payload };
+      return state;
     },
     addDeliveryMethod: (state, action: PayloadAction<any>) => {
       state.deliveryMethod = { ...state.paymentMethod, ...action.payload };
+      return state;
     },
     dropOrder: (state) => {
-      state = initialState;
+      return initialState;
     },
   },
 });
