@@ -7,21 +7,50 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Switch from "@mui/material/Switch";
 import Textarea from "@mui/joy/Textarea";
+import Button from "@mui/material/Button";
 
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import styles from "./OrderForm.module.scss";
+
+const paymentMethods = [
+  {
+    label: "Privat 24",
+    value: "privat-24",
+  },
+  {
+    label: "Paypal",
+    value: "paypal",
+  },
+  {
+    label: "Credit Card",
+    value: "credit-card",
+  },
+];
 
 const OrderForm: FC = () => {
   const [isSpecial, setIsSpecial] = useState<boolean>(false);
+  const [paymentMethod, setPaymentMethod] = useState<any>(paymentMethods[2]);
 
   const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsSpecial(e.target.checked);
   };
 
+  const handleChange = (event: SelectChangeEvent) => {
+    const el = paymentMethods.find(el => el.value === event.target.value);
+
+    setPaymentMethod(el);
+  };
+
+  const handleNext = () => {
+    console.log("Next");
+  }
+
   return (
     <div className={styles.container}>
       <Typography component={"h4"} variant="h6" className={styles.title}>
-        {" "}
-        Order Form here
+        Order Form
       </Typography>
 
       <div className={styles.form}>
@@ -32,8 +61,8 @@ const OrderForm: FC = () => {
           </div>
 
           <div className={styles.inputElement}>
-            <label htmlFor="first-name">Last Name:</label>
-            <TextField id="first-name" size="small" />
+            <label htmlFor="last-name">Last Name:</label>
+            <TextField id="last-name" size="small" />
           </div>
         </div>
         <div className={styles.inputRow}>
@@ -55,6 +84,19 @@ const OrderForm: FC = () => {
           </div>
         </div>
 
+        {/* select */}
+
+        <div className={styles.select}>
+          <label htmlFor="payment-method">Payment method:</label>
+          <FormControl sx={{ minWidth: 220 }} size="small">
+            <Select id="payment-method" value={paymentMethod?.value} onChange={handleChange}>
+              {paymentMethods.map((option) => {
+                return <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>;
+              })}
+            </Select>
+          </FormControl>
+        </div>
+
         <div className={styles.switchRow}>
           <label htmlFor="special">Special:</label>
           <Switch
@@ -65,12 +107,12 @@ const OrderForm: FC = () => {
           />
         </div>
 
-
-        
-
         {isSpecial && <Textarea minRows={6} placeholder="Your comments" />}
 
-        {/* comments Delivery method Payment method */}
+        <div className={styles.buttonsRow}>
+          <Button variant="contained" onClick={handleNext}>Next</Button>
+        </div>
+
       </div>
     </div>
   );
@@ -79,6 +121,7 @@ const OrderForm: FC = () => {
 export default OrderForm;
 
 /*
+/* comments Delivery method Payment method 
 first name
 last name
 
