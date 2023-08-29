@@ -8,6 +8,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Switch from "@mui/material/Switch";
 import Textarea from "@mui/joy/Textarea";
 import Button from "@mui/material/Button";
+import { useNavigate } from "react-router";
 
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -30,6 +31,7 @@ const paymentMethods = [
 ];
 
 const OrderForm: FC = () => {
+  const navigate = useNavigate();
   const [isSpecial, setIsSpecial] = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState<any>(paymentMethods[2]);
 
@@ -39,12 +41,12 @@ const OrderForm: FC = () => {
 
   const handleChange = (event: SelectChangeEvent) => {
     const el = paymentMethods.find(el => el.value === event.target.value);
-
     setPaymentMethod(el);
   };
 
   const handleNext = () => {
     console.log("Next");
+    navigate("/detail", {state: {paymentMethod}});
   }
 
   return (
