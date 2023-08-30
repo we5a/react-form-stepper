@@ -1,3 +1,4 @@
 import Layout from "./Layout/Layout";
+import CreditCardBlock from "./CreditCardBlock/CreditCardBlock";
 
-export { Layout };
+export { Layout, CreditCardBlock };

@@ -1,11 +1,12 @@
 import { type FC } from "react";
-import styles from "./Confirmation.module.scss";
-import { TextField, Typography, Button } from "@mui/material";
-import cn from "classnames";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { useNavigate } from "react-router";
+import { Typography, Button } from "@mui/material";
 
-const Confirmation = () => {
+import { useAppSelector } from "../../store/hooks";
+import { CreditCardBlock } from "../../components";
+import styles from "./Confirmation.module.scss";
+
+const Confirmation: FC = () => {
   const navigate = useNavigate();
   const order = useAppSelector((state) => state.order);
   const {
@@ -42,24 +43,8 @@ const Confirmation = () => {
           <li>Special comment: {special}</li>
         </ul>
 
-        {paymentMethod.value === "credit-card" && (
-          <div className={styles.cardBlock}>
-            <div className={styles.inputElement}>
-              <label htmlFor="card-number">Card number:</label>
-              <TextField id="card-number" size="small" type="number" />
-            </div>
+        {paymentMethod.type === "credit-card" && <CreditCardBlock />}
 
-            <div className={cn(styles.inputElement)}>
-              <label htmlFor="cvv">CVV:</label>
-              <TextField
-                className={styles.cvvField}
-                id="cvv"
-                size="small"
-                type="number"
-              />
-            </div>
-          </div>
-        )}
         {paymentMethod.type === "privat-24" && (
           <div> Privat 24 payment link</div>
         )}
